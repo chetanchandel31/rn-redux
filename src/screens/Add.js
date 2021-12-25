@@ -11,8 +11,11 @@ import {
   Button,
   H1,
 } from "native-base";
-
 import shortid from "shortid";
+
+import propTypes from "prop-types";
+import { addSeason } from "../action/list";
+import { connect } from "react-redux";
 
 const Add = ({ navigation, addSeason }) => {
   // to hold name of the season and total no of the season
@@ -21,7 +24,22 @@ const Add = ({ navigation, addSeason }) => {
 
   // to add the current season into list and then move to the home screen
   const handleSubmit = async () => {
-    //
+    try {
+      if (!name || !totalNoSeason) return alert("Please fill both fields");
+
+      const seasonToAdd = {
+        id: shortid.generate(),
+        name,
+        totalNoSeason,
+        isWatched: false,
+      };
+
+      addSeason(seasonToAdd);
+
+      navigation.navigate("Home");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -56,9 +74,16 @@ const Add = ({ navigation, addSeason }) => {
 };
 
 //TODO: Redux config
+Add.propTypes = {
+  addSeason: propTypes.func.isRequired,
+};
+
+const mapDispatchToProps = {
+  addSeason: (data) => addSeason(data), // prop called addSeason => makes use of this function
+};
 
 //TODO: Redux Export
-export default Add;
+export default connect(null, mapDispatchToProps)(Add);
 
 const styles = StyleSheet.create({
   container: {
